@@ -13,12 +13,10 @@ output:
     code_folding: hide
 ---
 
-
-
-
+why is there no text in github
 
 ```{r setup, include=FALSE, warning=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+
 ```
 
 
