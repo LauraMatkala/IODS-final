@@ -1,0 +1,25 @@
+---
+title: "IODS Final assignment"
+author: "Laura Matkala"
+output:
+  html_document:
+    theme: lumen
+    highlight: pygments
+    toc: true
+    toc_depth: 3
+    fig_caption: true
+    fig_width: 10
+    fig_height: 8
+    code_folding: hide
+---
+
+
+
+
+
+```{r setup, include=FALSE, warning=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
