@@ -3,19 +3,17 @@ title: "IODS Final assignment"
 author: "Laura Matkala"
 output:
   html_document:
-    theme: lumen
-    highlight: pygments
-    toc: true
-    toc_depth: 3
-    fig_caption: true
-    fig_width: 10
-    fig_height: 8
     code_folding: hide
+    fig_caption: yes
+    fig_height: 8
+    fig_width: 10
+    highlight: pygments
+    toc: yes
 ---
+# Some words to start with
+Welcome to the page! This is an essential part of my final assignment to the course "Introduction to Open Data Science", or as we friends call it "IODS" course. I will do my best with all the new skills I have learned during the course to make a best possible outcome for this assignment. You can find the file with all the data wrangling codes [here](https://github.com/LauraMatkala/IODS-final/blob/master/data_wrangling_final.R).
 
-Welcome to the page! This is an essential part of my final assignment to the course "Introduction to Open Data Science", or as we friends call it "IODS" course. I will do my best with all the new skills I have learned during the course. 
-
-```{r sköpödöö, warning=FALSE, message=FALSE} 
+```{r sk?p?d??, warning=FALSE, message=FALSE} 
 #above an example of a chunk, messages and warnings should be disabled now.
 
 ```
