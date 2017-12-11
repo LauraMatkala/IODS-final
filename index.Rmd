@@ -13,9 +13,10 @@ output:
     code_folding: hide
 ---
 
-why is there no text in github
+Welcome to the page! This is an essential part of my final assignment to the course "Introduction to Open Data Science", or as we friends call it "IODS" course. I will do my best with all the new skills I have learned during the course. 
 
-```{r setup, include=FALSE, warning=FALSE}
+```{r sköpödöö, warning=FALSE, message=FALSE} 
+#above an example of a chunk, messages and warnings should be disabled now.
 
 ```
 
