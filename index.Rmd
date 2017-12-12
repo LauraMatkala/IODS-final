@@ -1,6 +1,7 @@
 ---
 title: "IODS Final assignment"
 author: "Laura Matkala"
+affiliation: "laura.matkala@helsinki.fi"
 date: "`r Sys.Date()`"
 output:
   html_document:
@@ -54,13 +55,39 @@ I have standardized the dataset beforehand as well as explored it a bit. You can
 #<span style="color:darkblue">Analysis</span>
 ###<span style="color:darkblue">Linear regression</span>
 
-I will create a linear multiple regression model, which uses <span style="color:red">"rad"</span>, <span style="color:red">"dis"</span> and <span style="color:red">"ptratio"</span> as explanatory variables for <span style="color:red">"crime"</span>.
+
+To start with the linear regression I need to read in the data as well as call the needed packages. I will also check the structure and dimensions of the data to see that everything is in order after the data wrangling and saving the file as csv.
 
 
-```{r sk?p?d??, warning=FALSE, message=FALSE} 
-#above an example of a chunk where messages and warnings should be disabled.
+```{r start, warning=FALSE, message=FALSE} 
+Boston<-read.csv(file = "C:/HY-Data/MATKALA/GitHub/IODS-final/Boston.csv", header = TRUE, sep=",")
+library(GGally); library(ggplot2)
+str(Boston)
+dim(Boston)
+```
+
+Everything seems to be ok with the data and it looks like I meant it to look like at this point. Let's make a couple of plots to see what the data looks like.
+
+```{r plots, fig.height=10, fig.width=10}
+ggpairs(Boston, lower = list(combo = wrap("facethist", bins = 20)))
 
 ```
 
 
+
+I will create a linear multiple regression model, which uses <span style="color:red">"rad"</span>, <span style="color:red">"dis"</span> and <span style="color:red">"ptratio"</span> as explanatory variables for <span style="color:red">"crim"</span>. A linear multiple regression model in this case takes the form $y = \alpha+\beta_1x_1+\beta_2x_2+\beta_3x_3+\epsilon$, where rad, dis and ptratio are estimates of $\beta$, $\alpha$ is an intercept and $\epsilon$ is the error term/random noise. 
+
+```{r multiple regression}
+my_model <- lm(crim ~ rad + dis + ptratio, data = Boston)
+summary(my_model)
+```
+
+
+In linear regression the aim is to minimize the residuals, which are the prediction errors of the model. The best model fit is found so that the sum of the squared residuals is minimized.  The $\beta$ values this model gives us are -5.8e-01, -9.3e-02 and -1.27e-03,respectively, whereas the $\alpha$ (intercept) is -3-03e-16. Standard error for $\alpha$ is 3.46e-02 and for $\beta$s 4.4e-02, 4.0e-02 and 3.9e-02, respectively.  Based on p-values it seems that <span style="color:red">"ptratio"</span>  is not important for the model, whereas <span style="color:red">"rad"</span> and <span style="color:red">"dis"</span> are. I will thus leave <span style="color:red">"ptratio"</span> out and formulate another model.
+
+```{r multiple regression part two}
+my_model2<- lm(crim ~ rad + dis, data = Boston)
+summary(my_model2)
+```
+Well, no dramatic changes compared to the previous situation. I guess this means that ptratio was just meaningless in the model. Then again, when I standardized the data, the values of the variables got very small. I don't know if standardization was really needed, I just wanted to wrangle the data a bit instead of using it directly as it is.
 
