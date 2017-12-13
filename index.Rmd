@@ -115,7 +115,7 @@ My hypotheses are:
 
 **<span style="background: lightgreen">2. Full-value property-tax rate does not affect per capita crime rate.</span>**
 
-**<span style="background: lightgreen">3. Proportion of non-retail business acres does not affect åer capita crime rate</span>**
+**<span style="background: lightgreen">3. Proportion of non-retail business acres does not affect ?er capita crime rate</span>**
 
 And here is the model, its summary and coefficients.
 
