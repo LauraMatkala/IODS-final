@@ -11,6 +11,7 @@ output:
     fig_width: 10
     highlight: pygments
     toc: yes
+    toc_depth: 3
 ---
 <style>
 p.caption {
@@ -19,10 +20,11 @@ p.caption {
 </style>
 ---
 # <span style="color:darkblue">Some words to start with</span>
+
 **Welcome to the page!** This is an essential part of my final assignment to the course "Introduction to Open Data Science", or as we friends call it "IODS" course. My name is Laura Matkala and I am a PhD student who studies forests. I have to say this is one of the most inspiring courses I have taken in a while. I will do my best with all the new skills I have learned during the course to make a best possible outcome for this assignment!
 
 
-```{r fig1, echo=FALSE, out.width='100%', fig.cap="Happy forest scientist by a lake in a mountain forest at Mammoth Lakes, CA, USA.(This is here to remind us that although it doesn't look like it now, the sun actually does exist...)"}
+```{r fig1,  fig.align="center", out.width='100%', fig.cap="Happy forest scientist by a lake in a mountain forest at Mammoth Lakes, CA, USA.(This is here to remind us that although it doesn't look like it now, the sun actually does exist...)"}
 knitr::include_graphics('C:/HY-Data/MATKALA/GitHub/IODS-final/figures/49.jpg')
 ```
 
@@ -32,13 +34,13 @@ knitr::include_graphics('C:/HY-Data/MATKALA/GitHub/IODS-final/figures/49.jpg')
 
 I chose to use the dataset <span style="color:red">Boston</span>, which includes data about housing in the suburbs of Boston , Massachusettes, USA. I will later perform <span style="background:yellow">linear regression</span> and <span style="background:yellow">logistic regression</span> to the variable <span style="color:red">"crim"</span>,  but first some basic information about the dataset. 
 
-```{r fig2, echo=FALSE, out.width='100%', fig.cap="The dataset has variables related to housing in the suburbs of Boston, Massachusettes, USA. Picture from: http://amtrakdowneaster.com/stations/boston"}
+```{r fig2, out.width='100%', fig.cap="The dataset has variables related to housing in the suburbs of Boston, Massachusettes, USA. Picture from: http://amtrakdowneaster.com/stations/boston"}
 knitr::include_graphics('C:/HY-Data/MATKALA/GitHub/IODS-final/figures/boston.jpg')
 ```
 
 
 
-I have standardized the dataset beforehand as well as explored it a bit. You can find the R script file with all the data wrangling and codes [here](https://github.com/LauraMatkala/IODS-final/blob/master/data_wrangling_final.R). The variables in the dataset are:
+I didn't do any data wrangling related to the part where I will perform <span style="background:yellow">linear regression</span>, but I did something for the latter <span style="background:yellow">logistic regression</span> part. You can find the R script file with all the data wrangling and codes [here](https://github.com/LauraMatkala/IODS-final/blob/master/data_wrangling_final.R). The variables in the dataset are:
 
 
 * <span style="color:green">crim = per capita crime rate by town</span>
@@ -59,7 +61,8 @@ I have standardized the dataset beforehand as well as explored it a bit. You can
 
 
 #<span style="color:darkblue">Analysis</span>
-###<span style="color:darkblue">Linear regression</span>
+##<span style="color:magenta">Linear regression</span>
+###<span style="color:green">Data exploration</span>
 
 
 To start with the linear regression I need to read in the data as well as call the needed packages. I will also check the structure and dimensions of the data to see that everything is in order after the data wrangling and saving the file as csv.
@@ -79,7 +82,13 @@ ggpairs(Boston, lower = list(combo = wrap("facethist", bins = 20)))
 
 ```
 
-Ok, we see that <span style="color:red">"rad"</span>, <span style="color:red">"tax"</span> and <span style="color:red">"indus"</span> have the highest correlations with <span style="color:red">"crim"</span>. I will thus use those variables for creating a linear multiple regression model, where the three first mentioned variables are used as explanatory variables for <span style="color:red">"crim"</span>.  A linear multiple regression model in this case takes the form $y = \alpha+\beta_1x_1+\beta_2x_2+\beta_3x_3+\epsilon$, where rad, dis and ptratio are estimates of $\beta$, $\alpha$ is an intercept and $\epsilon$ is the error term/random noise. 
+Ok, we see that <span style="color:red">"rad"</span>, <span style="color:red">"tax"</span> and <span style="color:red">"indus"</span> have high correlations with <span style="color:red">"crim"</span>. I will thus use those variables for creating a linear multiple regression model, where the three first mentioned variables are used as explanatory variables for <span style="color:red">"crim"</span>.  A linear multiple regression model in this case takes the form $y = \alpha+\beta_1x_1+\beta_2x_2+\beta_3x_3+\epsilon$, where rad, dis and ptratio are estimates of $\beta$, $\alpha$ is an intercept and $\epsilon$ is the error term/random noise. 
+
+
+###<span style="color:green">Building the model</span>
+
+
+Let's start modeling!
 
 ```{r multiple regression}
 my_model <- lm(crim ~ rad + tax + indus, data = Boston)
@@ -87,15 +96,64 @@ summary(my_model)
 ```
 
 
-In linear regression the aim is to minimize the residuals, which are the prediction errors of the model. The best model fit is found so that the sum of the squared residuals is minimized.  The $\beta$ values this model gives us are -5.7e-01, 3.2e-02 and 4.4e-03,respectively, whereas the $\alpha$ (intercept) is -3.3e-16. Standard error for $\alpha$ is 3.47e-02 and for $\beta$s 8.6e-02, 10.0e-02 and 5.1e-02, respectively.  Based on p-values it seems that only <span style="color:red">"rad"</span> is important for the model. I will thus leave <span style="color:red">"tax"</span> and  <span style="color:red">"indus"</span>out and formulate another model.
+In linear regression the aim is to minimize the residuals, which are the prediction errors of the model. The best model fit is found so that the sum of the squared residuals is minimized.  The $\beta$ values this model gives us are 0.6, 0.001 and 0.06,respectively, whereas the $\alpha$ (intercept) is -3.0. Standard error for $\alpha$ is 1.1 and for $\beta$s 0.08, 0.005 and 0.06, respectively.  Based on p-values it seems that only <span style="color:red">"rad"</span> is important for the model. I will thus leave <span style="color:red">"tax"</span> and  <span style="color:red">"indus"</span>out and formulate another model.
 
 ```{r multiple regression part two}
 my_model2<- lm(crim ~ rad, data = Boston)
 summary(my_model2)
 ```
-Well, no dramatic changes compared to the previous situation if we look at the residuals. The standard error for <span style="color:red">"rad"</span> as well as its p-value got smaller, though, compared to model number 1, so I guess in this sense the latter model is better than the first one. When I standardized the data, the values of the variables got very small. I don't know if standardization was really needed, I just wanted to wrangle the data a bit instead of using it directly as it is. Anyway, I come to the same conclusion as I did when looking into this dataset in the exercise where we used LDA: with higher index of accessibility to radial highways there are better possibilities to access the highway, and thus escape after committing a crime.
+Well, no dramatic changes compared to the previous situation if we look at the residuals. The standard error for <span style="color:red">"rad"</span> as well as its p-value got smaller, though, compared to model number 1. The same happened to the intercept, so I guess in this sense the latter model is better than the first one. Anyway, I come to the same conclusion as I did when looking into this dataset in the exercise where we used LDA: with higher index of accessibility to radial highways there are better possibilities to access the highway, and thus escape after committing a crime.
 
-### Logistic regression
+##<span style="color:magenta">Logistic regression</span>
+###<span style="color:green">The model and its odds ratio</span>
 
-It's time to do another kind of analysis for the same dataset. I will use logistic regression for this.
+It's time to do another kind of analysis for the same data. I choose to use logistic regression for this. I will use the same explanatory variables as with linear regression and formulate the hypotheses based the on linear regression results. However, for logistic regression I am using the dependent variable <span style="color:red">"crime"</span> instead of <span style="color:red">"crim"</span>, since the dependent variable in logistic regression needs to be categorical. So <span style="color:red">"crime"</span> is categorical, but basically otherwise the same as <span style="color:red">"crim"</span>. As I mentioned earlier,   [here](https://github.com/LauraMatkala/IODS-final/blob/master/data_wrangling_final.R) you can see how I have done the mutation of the dependent variable. 
 
+My hypotheses are:
+
+**<span style="background: lightgreen">1. Index of accessibility to radial highways affects per capita crime rate.</span>**
+
+**<span style="background: lightgreen">2. Full-value property-tax rate does not affect per capita crime rate.</span>**
+
+**<span style="background: lightgreen">3. Proportion of non-retail business acres does not affect åer capita crime rate</span>**
+
+And here is the model, its summary and coefficients.
+
+```{r logistic}
+m <- glm(crime ~ rad + tax + indus, data = Boston, family = "binomial")
+summary(m)
+coef(m)
+```
+
+Since the explanatory variables are not categorical, all the necessary information is shown above. According to the summary table <span style="color:red">"rad"</span> is once again the only explanatory variable that is necessary for the model. This supports hypotheses 2 and 3. Therefore, I will leave the other variables out, adjust the model to its final form, show its summary and present its <span style="background:yellow">odds ratios</span>.
+
+```{r logistic final, warning=FALSE, message=FALSE }
+m2 <- glm(crime ~ rad, data = Boston, family ="binomial")
+summary(m2)
+
+library(tidyr)
+
+OR <- coef(m2) %>% exp
+CI<-confint(m2) %>% exp
+cbind(OR, CI)
+```
+
+```{r fig3, fig.align="center", out.width='50%'}
+knitr::include_graphics('C:/HY-Data/MATKALA/GitHub/IODS-final/figures/holy_moly.jpg')
+```
+
+
+What an earth is going on with the intercept odds ratio?!? Howcome is it so high? If we look at the odds ratio of <span style="color:red">"rad"</span> it is approximately 0.6. This means, if I understood correctly, that if <span style="color:red">"rad"</span> is high, there is a 60 % chance for <span style="color:red">"crime"</span> to be high as well. But before I can say all my hypotheses are confirmed I need to look into the <span style="background:yellow">predictive power</span> of the model.
+
+###<span style="color:green">The predictive power</span>
+
+```{r predict,  warning=FALSE, message=FALSE}
+library(dplyr)
+probabilities <- predict(m2, type = "response")
+Boston <- mutate(Boston, probability = probabilities)
+Boston <- mutate(Boston, prediction = probability>0.5 )
+select(Boston, rad, crime, probability, prediction) %>% tail(10)
+table(crime = Boston$crime, prediction = Boston$prediction)
+```
+
+Well, it looks like for high values of <span style="color:red">"crime"</span> the model is not working??? oR what.
