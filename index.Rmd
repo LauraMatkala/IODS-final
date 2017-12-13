@@ -21,21 +21,27 @@ p.caption {
 # <span style="color:darkblue">Some words to start with</span>
 **Welcome to the page!** This is an essential part of my final assignment to the course "Introduction to Open Data Science", or as we friends call it "IODS" course. My name is Laura Matkala and I am a PhD student who studies forests. I have to say this is one of the most inspiring courses I have taken in a while. I will do my best with all the new skills I have learned during the course to make a best possible outcome for this assignment!
 
-![Happy forest scientist by a lake in a mountain forest at Mammoth Lakes, CA, USA.(This is here to remind us that although it doesn't look like it now, the sun actually does exist...)](C:/HY-Data/MATKALA/GitHub/IODS-final/figures/49.jpg)
 
+```{r fig1, echo=FALSE, out.width='100%', fig.cap="Happy forest scientist by a lake in a mountain forest at Mammoth Lakes, CA, USA.(This is here to remind us that although it doesn't look like it now, the sun actually does exist...)"}
+knitr::include_graphics('C:/HY-Data/MATKALA/GitHub/IODS-final/figures/49.jpg')
+```
 
 
 
 #<span style="color:darkblue">About the dataset</span>
 
-I chose to use the dataset <span style="color:red">Boston</span>, which includes data about housing in the suburbs of Boston , Massachusettes, USA. I will later perform <span style="background:yellow">linear regression</span> and <span style="background:yellow">logistic regression</span> to the variable <span style="color:red">"crime"</span>,  but first some basic information about the dataset. 
+I chose to use the dataset <span style="color:red">Boston</span>, which includes data about housing in the suburbs of Boston , Massachusettes, USA. I will later perform <span style="background:yellow">linear regression</span> and <span style="background:yellow">logistic regression</span> to the variable <span style="color:red">"crim"</span>,  but first some basic information about the dataset. 
 
-![The dataset has variables related to housing in the suburbs of Boston, Massachusettes, USA. Picture from: http://amtrakdowneaster.com/stations/boston](C:/HY-Data/MATKALA/GitHub/IODS-final/figures/boston.jpg)
+```{r fig2, echo=FALSE, out.width='100%', fig.cap="The dataset has variables related to housing in the suburbs of Boston, Massachusettes, USA. Picture from: http://amtrakdowneaster.com/stations/boston"}
+knitr::include_graphics('C:/HY-Data/MATKALA/GitHub/IODS-final/figures/boston.jpg')
+```
+
+
 
 I have standardized the dataset beforehand as well as explored it a bit. You can find the R script file with all the data wrangling and codes [here](https://github.com/LauraMatkala/IODS-final/blob/master/data_wrangling_final.R). The variables in the dataset are:
 
 
-* <span style="color:green">crime = per capita crime rate by town (high, medium low, medium high, high)</span>
+* <span style="color:green">crim = per capita crime rate by town</span>
 * <span style="color:purple">zn = proportion of residential land zoned for lots over 25,000 sq.ft</span>
 * <span style="color:green">indus = proportion of non-retail business acres per town</span>
 * <span style="color:purple">chas = Charles River dummy variable (= 1 if tract bounds river; 0 otherwise)</span>
@@ -73,21 +79,23 @@ ggpairs(Boston, lower = list(combo = wrap("facethist", bins = 20)))
 
 ```
 
-
-
-I will create a linear multiple regression model, which uses <span style="color:red">"rad"</span>, <span style="color:red">"dis"</span> and <span style="color:red">"ptratio"</span> as explanatory variables for <span style="color:red">"crim"</span>. A linear multiple regression model in this case takes the form $y = \alpha+\beta_1x_1+\beta_2x_2+\beta_3x_3+\epsilon$, where rad, dis and ptratio are estimates of $\beta$, $\alpha$ is an intercept and $\epsilon$ is the error term/random noise. 
+Ok, we see that <span style="color:red">"rad"</span>, <span style="color:red">"tax"</span> and <span style="color:red">"indus"</span> have the highest correlations with <span style="color:red">"crim"</span>. I will thus use those variables for creating a linear multiple regression model, where the three first mentioned variables are used as explanatory variables for <span style="color:red">"crim"</span>.  A linear multiple regression model in this case takes the form $y = \alpha+\beta_1x_1+\beta_2x_2+\beta_3x_3+\epsilon$, where rad, dis and ptratio are estimates of $\beta$, $\alpha$ is an intercept and $\epsilon$ is the error term/random noise. 
 
 ```{r multiple regression}
-my_model <- lm(crim ~ rad + dis + ptratio, data = Boston)
+my_model <- lm(crim ~ rad + tax + indus, data = Boston)
 summary(my_model)
 ```
 
 
-In linear regression the aim is to minimize the residuals, which are the prediction errors of the model. The best model fit is found so that the sum of the squared residuals is minimized.  The $\beta$ values this model gives us are -5.8e-01, -9.3e-02 and -1.27e-03,respectively, whereas the $\alpha$ (intercept) is -3-03e-16. Standard error for $\alpha$ is 3.46e-02 and for $\beta$s 4.4e-02, 4.0e-02 and 3.9e-02, respectively.  Based on p-values it seems that <span style="color:red">"ptratio"</span>  is not important for the model, whereas <span style="color:red">"rad"</span> and <span style="color:red">"dis"</span> are. I will thus leave <span style="color:red">"ptratio"</span> out and formulate another model.
+In linear regression the aim is to minimize the residuals, which are the prediction errors of the model. The best model fit is found so that the sum of the squared residuals is minimized.  The $\beta$ values this model gives us are -5.7e-01, 3.2e-02 and 4.4e-03,respectively, whereas the $\alpha$ (intercept) is -3.3e-16. Standard error for $\alpha$ is 3.47e-02 and for $\beta$s 8.6e-02, 10.0e-02 and 5.1e-02, respectively.  Based on p-values it seems that only <span style="color:red">"rad"</span> is important for the model. I will thus leave <span style="color:red">"tax"</span> and  <span style="color:red">"indus"</span>out and formulate another model.
 
 ```{r multiple regression part two}
-my_model2<- lm(crim ~ rad + dis, data = Boston)
+my_model2<- lm(crim ~ rad, data = Boston)
 summary(my_model2)
 ```
-Well, no dramatic changes compared to the previous situation. I guess this means that ptratio was just meaningless in the model. Then again, when I standardized the data, the values of the variables got very small. I don't know if standardization was really needed, I just wanted to wrangle the data a bit instead of using it directly as it is.
+Well, no dramatic changes compared to the previous situation if we look at the residuals. The standard error for <span style="color:red">"rad"</span> as well as its p-value got smaller, though, compared to model number 1, so I guess in this sense the latter model is better than the first one. When I standardized the data, the values of the variables got very small. I don't know if standardization was really needed, I just wanted to wrangle the data a bit instead of using it directly as it is. Anyway, I come to the same conclusion as I did when looking into this dataset in the exercise where we used LDA: with higher index of accessibility to radial highways there are better possibilities to access the highway, and thus escape after committing a crime.
+
+### Logistic regression
+
+It's time to do another kind of analysis for the same dataset. I will use logistic regression for this.
 
