@@ -20,6 +20,10 @@ p.caption {
 }
 </style>
 ---
+# <span style="color:darkblue">Briefly</span>
+
+In this final assignment I used dataset Boston from the R package MASS. I chose variable related to crime rate per capita was as independent variable and took a look into how it could be explained with three other variables: proportion of non-retail business acres, full-value property-tax rate and index of accessibility to radial highway. I used linear and logistic regression were, and both gave the same result that only index of accessibility to radial highway is affecting crime rate. Data was transformed for logistic regreassion and used as it is for linear regression.
+
 # <span style="color:darkblue">Some words to start with</span>
 
 **Welcome to the page!** This is an essential part of my final assignment to the course "Introduction to Open Data Science", or as we friends call it "IODS" course. My name is Laura Matkala and I am a PhD student who studies forests. I have to say this is one of the most inspiring courses I have taken in a while. I will do my best with all the new skills I have learned during the course to make a best possible outcome for this assignment!
@@ -58,6 +62,7 @@ I didn't do any data wrangling related to the part where I will perform <span st
 * <span style="color:purple">black = 1000(Bk - 0.63)^2 where Bk is the proportion of blacks by town</span>
 * <span style="color:green">lstat = lower status of the population (percent)</span>
 * <span style="color:purple">medv = median value of owner-occupied homes in \$1000s</span> 
+* <span style="color:green">high_crime = TRUE when crim = high, FALSE otherwise</span>
 
 
 
@@ -89,7 +94,7 @@ dim(Boston)
 
 Everything seems to be ok with the data and it looks like I meant it to look like at this point. Let's make a couple of plots to see what the data looks like.
 
-```{r plots, fig.height=10, fig.width=10, warning=FALSE, message=FALSE}
+```{r plots, fig.height=10, fig.width=14, warning=FALSE, message=FALSE}
 ggpairs(Boston, lower = list(combo = wrap("facethist", bins = 20)))
 
 ```
@@ -120,12 +125,12 @@ Well, no dramatic changes compared to the previous situation if we look at the r
 ##<span style="color:magenta">Logistic regression</span>
 ###<span style="color:green">The model and its odds ratio</span>
 
-It's time to do another kind of analysis for the same data. I choose to use logistic regression for this. I will use the same explanatory variables as with linear regression, except that for logistic regression I am using the dependent variable <span style="color:red">"crime"</span> instead of <span style="color:red">"crim"</span>, since the dependent variable in logistic regression needs to be categorical. So <span style="color:red">"crime"</span> is categorical, but basically otherwise the same as <span style="color:red">"crim"</span>. As I mentioned earlier,   [here](https://github.com/LauraMatkala/IODS-final/blob/master/data_wrangling_final.R) you can see how I have done the mutation of the dependent variable. 
+It's time to do another kind of analysis for the same data. I choose to use logistic regression for this. It I will use the same explanatory variables as with linear regression, except that for logistic regression I am using the dependent variable <span style="color:red">"high_crime"</span> instead of <span style="color:red">"crim"</span>, since the dependent variable in logistic regression needs to be categorical. So <span style="color:red">"high_crime"</span> is categorical, and gets the values TRUE when <span style="color:red">"crim"</span> is high and FALSE otherwise. This type of mutation is required for logistic regression because it deals with probabilities. As I mentioned earlier,   [here](https://github.com/LauraMatkala/IODS-final/blob/master/data_wrangling_final.R) you can see how I have done the mutation of the dependent variable. 
 
 Here is the model, its summary and coefficients.
 
 ```{r logistic, warning=FALSE, message=FALSE}
-m <- glm(crime ~ rad + tax + indus, data = Boston, family = "binomial")
+m <- glm(high_crime ~ rad + tax + indus, data = Boston, family = "binomial")
 summary(m)
 coef(m)
 ```
@@ -133,7 +138,7 @@ coef(m)
 Since the explanatory variables are not categorical, all the necessary information is shown above. According to the summary table <span style="color:red">"rad"</span> is once again the only explanatory variable that is necessary for the model. This supports hypotheses 2 and 3. Therefore, I will leave the other variables out, adjust the model to its final form, show its summary and present its <span style="background:yellow">odds ratios</span>.
 
 ```{r logistic final, warning=FALSE, message=FALSE}
-m2 <- glm(crime ~ rad, data = Boston, family ="binomial")
+m2 <- glm(high_crime ~ rad, data = Boston, family ="binomial")
 summary(m2)
 
 library(tidyr)
@@ -143,12 +148,8 @@ CI<-confint(m2) %>% exp
 cbind(OR, CI)
 ```
 
-```{r fig3, fig.align="center", out.width='50%'}
-knitr::include_graphics('C:/HY-Data/MATKALA/GitHub/IODS-final/figures/holy_moly.jpg')
-```
 
-
-What an earth is going on with the intercept odds?!? Howcome is it so high? If we look at the odds of <span style="color:red">"rad"</span> it is approximately 0.6. This means, if I understood correctly, that if <span style="color:red">"rad"</span> is high, there is a 60 % chance for <span style="color:red">"crime"</span> to be high as well. But before I can say all my hypotheses are confirmed I need to look into the <span style="background:yellow">predictive power</span> of the model.
+If we look at the odds of <span style="color:red">"rad"</span> it is approximately 1.6. This means, if I understood correctly, that if <span style="color:red">"rad"</span> is high, there is a 1,6 times bigger chance for <span style="color:red">"high_crime"</span> to be TRUE than for it to be FALSE. But before I can say all my hypotheses are confirmed I need to look into the <span style="background:yellow">predictive power</span> of the model.
 
 ###<span style="color:green">The predictive power</span>
 
@@ -157,11 +158,23 @@ library(dplyr)
 probabilities <- predict(m2, type = "response")
 Boston <- mutate(Boston, probability = probabilities)
 Boston <- mutate(Boston, prediction = probability>0.5 )
-select(Boston, rad, crime, probability, prediction) %>% tail(10)
-table(crime = Boston$crime, prediction = Boston$prediction)
+select(Boston, rad, high_crime, probability, prediction) %>% tail(10)
+table(high_crime = Boston$high_crime, prediction = Boston$prediction)
 ```
 
-Well, the numbers look rather suspicious to me. Especially since it looks like when <span style="color:red">"rad"</span> is high,  <span style="color:red">"crime"</span> is medium high, but at the same time when  <span style="color:red">"rad"</span> is high, <span style="color:red">"crime"</span> is medium low...and the probabilities for both of these results is super high. Perhaps this just tells us that logistic regression is not the right method for analyzing this data. Seeing this I am not as excited about this model as I was before. <span style="color:red">"rad"</span> is probably the only one of the explanatory variables that affects <span style="color:red">"crime"</span>, but logistic regression is not the way to analyse the data.
+I will also calculate the training error, which gives us the total proportion of inaccurately classified individuals.
+
+```{r training error}
+loss_func <- function(class, prob) {
+  n_wrong <- abs(class - prob) > 0.5
+  mean(n_wrong)
+}
+
+loss_func(class = Boston$high_crime, prob = Boston$probability)
+
+
+```
+Well, the numbers look rather good to me. The model predicts crime rate quite well, and the training error is only 1 %. Actually, it looks suspiciously good, but maybe I will go ahead and trust this result at this point. So with certain modifications, also linear and logistic regression can be used for this dataset, and not just LDA what we used in our exercise during the course.
 
 
 

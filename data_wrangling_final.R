@@ -16,14 +16,16 @@ str(data) # with this one can check the structure of the data. Boston seems to h
 summary(Boston) # This shows the summary of all variables, their means, min. and max. values, 1st and 3rd quantiles. 
 
 
-#This is the part where I mutate "crim" into a categorical variable called "crime"
-#I will keep both "crim" and "crime" in the dataset
+#This is the part where I mutate "crim" into a categorical variable called "crime" and create another variable, "high_crime" for those values when "crime" is high
+#I will keep "crim" and "high_crime in the dataset
 
+library(dplyr) #this library is needed for some of the following actions
 class(data)
 data<-as.data.frame(data)
 bins <- quantile(data$crim)
 crime <- cut(data$crim, breaks = bins, include.lowest = TRUE, label=c("low", "med_low", "med_high", "high")) 
-data<- data.frame(data, crime)
+data<- mutate(data, high_crime = crime == "high") #creates a variable high_crime, which is TRUE when the value of "crime" is high.
+data<- data.frame(data, high_crime)
 
 # I will save the dataset as a csv file 
 
