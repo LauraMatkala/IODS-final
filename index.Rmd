@@ -1,7 +1,8 @@
 ---
 title: "IODS Final assignment"
-author: "Laura Matkala"
-affiliation: "laura.matkala@helsinki.fi"
+author: 
+- name: "Laura Matkala"
+  affiliation: "laura.matkala@helsinki.fi"
 date: "`r Sys.Date()`"
 output:
   html_document:
@@ -61,6 +62,17 @@ I didn't do any data wrangling related to the part where I will perform <span st
 
 
 #<span style="color:darkblue">Analysis</span>
+
+
+The hypotheses for both analysis are: 
+
+**<span style="background: lightgreen">1. Index of accessibility to radial highways affects per capita crime rate.</span>**
+
+**<span style="background: lightgreen">2. Full-value property-tax rate does not affect per capita crime rate.</span>**
+
+**<span style="background: lightgreen">3. Proportion of non-retail business acres does not affect per capita crime rate</span>**
+
+
 ##<span style="color:magenta">Linear regression</span>
 ###<span style="color:green">Data exploration</span>
 
@@ -77,12 +89,12 @@ dim(Boston)
 
 Everything seems to be ok with the data and it looks like I meant it to look like at this point. Let's make a couple of plots to see what the data looks like.
 
-```{r plots, fig.height=10, fig.width=10}
+```{r plots, fig.height=10, fig.width=10, warning=FALSE, message=FALSE}
 ggpairs(Boston, lower = list(combo = wrap("facethist", bins = 20)))
 
 ```
 
-Ok, we see that <span style="color:red">"rad"</span>, <span style="color:red">"tax"</span> and <span style="color:red">"indus"</span> have high correlations with <span style="color:red">"crim"</span>. I will thus use those variables for creating a linear multiple regression model, where the three first mentioned variables are used as explanatory variables for <span style="color:red">"crim"</span>.  A linear multiple regression model in this case takes the form $y = \alpha+\beta_1x_1+\beta_2x_2+\beta_3x_3+\epsilon$, where rad, dis and ptratio are estimates of $\beta$, $\alpha$ is an intercept and $\epsilon$ is the error term/random noise. 
+Ok, we see that <span style="color:red">"rad"</span>, <span style="color:red">"tax"</span> and <span style="color:red">"indus"</span> have high correlations with <span style="color:red">"crim"</span>. I will thus use those variables for creating a linear multiple regression model, where the three first mentioned variables are used as explanatory variables for <span style="color:red">"crim"</span>.  A linear multiple regression model in this case takes the form $y = \alpha+\beta_1x_1+\beta_2x_2+\beta_3x_3+\epsilon$, where rad, dis and ptratio are estimates of $\beta$, $\alpha$ is an intercept and $\epsilon$ is the error term/random noise.
 
 
 ###<span style="color:green">Building the model</span>
@@ -90,7 +102,7 @@ Ok, we see that <span style="color:red">"rad"</span>, <span style="color:red">"t
 
 Let's start modeling!
 
-```{r multiple regression}
+```{r multiple regression, warning=FALSE, message=FALSE}
 my_model <- lm(crim ~ rad + tax + indus, data = Boston)
 summary(my_model)
 ```
@@ -98,28 +110,21 @@ summary(my_model)
 
 In linear regression the aim is to minimize the residuals, which are the prediction errors of the model. The best model fit is found so that the sum of the squared residuals is minimized.  The $\beta$ values this model gives us are 0.6, 0.001 and 0.06,respectively, whereas the $\alpha$ (intercept) is -3.0. Standard error for $\alpha$ is 1.1 and for $\beta$s 0.08, 0.005 and 0.06, respectively.  Based on p-values it seems that only <span style="color:red">"rad"</span> is important for the model. I will thus leave <span style="color:red">"tax"</span> and  <span style="color:red">"indus"</span>out and formulate another model.
 
-```{r multiple regression part two}
+```{r multiple regression part two, warning=FALSE, message=FALSE}
 my_model2<- lm(crim ~ rad, data = Boston)
 summary(my_model2)
 ```
-Well, no dramatic changes compared to the previous situation if we look at the residuals. The standard error for <span style="color:red">"rad"</span> as well as its p-value got smaller, though, compared to model number 1. The same happened to the intercept, so I guess in this sense the latter model is better than the first one. Anyway, I come to the same conclusion as I did when looking into this dataset in the exercise where we used LDA: with higher index of accessibility to radial highways there are better possibilities to access the highway, and thus escape after committing a crime.
+
+Well, no dramatic changes compared to the previous situation if we look at the residuals. The standard error for <span style="color:red">"rad"</span> as well as its p-value got smaller, though, compared to model number 1. The same happened to the intercept, so I guess in this sense the latter model is better than the first one. Anyway, I come to the same conclusion as I did when looking into this dataset in the exercise where we used LDA: with higher index of accessibility to radial highways there are better possibilities to access the highway, and thus escape after committing a crime. In other words, all my hypotheses are supported and confirmed.
 
 ##<span style="color:magenta">Logistic regression</span>
 ###<span style="color:green">The model and its odds ratio</span>
 
-It's time to do another kind of analysis for the same data. I choose to use logistic regression for this. I will use the same explanatory variables as with linear regression and formulate the hypotheses based the on linear regression results. However, for logistic regression I am using the dependent variable <span style="color:red">"crime"</span> instead of <span style="color:red">"crim"</span>, since the dependent variable in logistic regression needs to be categorical. So <span style="color:red">"crime"</span> is categorical, but basically otherwise the same as <span style="color:red">"crim"</span>. As I mentioned earlier,   [here](https://github.com/LauraMatkala/IODS-final/blob/master/data_wrangling_final.R) you can see how I have done the mutation of the dependent variable. 
+It's time to do another kind of analysis for the same data. I choose to use logistic regression for this. I will use the same explanatory variables as with linear regression, except that for logistic regression I am using the dependent variable <span style="color:red">"crime"</span> instead of <span style="color:red">"crim"</span>, since the dependent variable in logistic regression needs to be categorical. So <span style="color:red">"crime"</span> is categorical, but basically otherwise the same as <span style="color:red">"crim"</span>. As I mentioned earlier,   [here](https://github.com/LauraMatkala/IODS-final/blob/master/data_wrangling_final.R) you can see how I have done the mutation of the dependent variable. 
 
-My hypotheses are:
+Here is the model, its summary and coefficients.
 
-**<span style="background: lightgreen">1. Index of accessibility to radial highways affects per capita crime rate.</span>**
-
-**<span style="background: lightgreen">2. Full-value property-tax rate does not affect per capita crime rate.</span>**
-
-**<span style="background: lightgreen">3. Proportion of non-retail business acres does not affect ?er capita crime rate</span>**
-
-And here is the model, its summary and coefficients.
-
-```{r logistic}
+```{r logistic, warning=FALSE, message=FALSE}
 m <- glm(crime ~ rad + tax + indus, data = Boston, family = "binomial")
 summary(m)
 coef(m)
@@ -127,7 +132,7 @@ coef(m)
 
 Since the explanatory variables are not categorical, all the necessary information is shown above. According to the summary table <span style="color:red">"rad"</span> is once again the only explanatory variable that is necessary for the model. This supports hypotheses 2 and 3. Therefore, I will leave the other variables out, adjust the model to its final form, show its summary and present its <span style="background:yellow">odds ratios</span>.
 
-```{r logistic final, warning=FALSE, message=FALSE }
+```{r logistic final, warning=FALSE, message=FALSE}
 m2 <- glm(crime ~ rad, data = Boston, family ="binomial")
 summary(m2)
 
@@ -143,7 +148,7 @@ knitr::include_graphics('C:/HY-Data/MATKALA/GitHub/IODS-final/figures/holy_moly.
 ```
 
 
-What an earth is going on with the intercept odds ratio?!? Howcome is it so high? If we look at the odds ratio of <span style="color:red">"rad"</span> it is approximately 0.6. This means, if I understood correctly, that if <span style="color:red">"rad"</span> is high, there is a 60 % chance for <span style="color:red">"crime"</span> to be high as well. But before I can say all my hypotheses are confirmed I need to look into the <span style="background:yellow">predictive power</span> of the model.
+What an earth is going on with the intercept odds?!? Howcome is it so high? If we look at the odds of <span style="color:red">"rad"</span> it is approximately 0.6. This means, if I understood correctly, that if <span style="color:red">"rad"</span> is high, there is a 60 % chance for <span style="color:red">"crime"</span> to be high as well. But before I can say all my hypotheses are confirmed I need to look into the <span style="background:yellow">predictive power</span> of the model.
 
 ###<span style="color:green">The predictive power</span>
 
@@ -156,4 +161,10 @@ select(Boston, rad, crime, probability, prediction) %>% tail(10)
 table(crime = Boston$crime, prediction = Boston$prediction)
 ```
 
-Well, it looks like for high values of <span style="color:red">"crime"</span> the model is not working??? oR what.
+Well, the numbers look rather suspicious to me. Especially since it looks like when <span style="color:red">"rad"</span> is high,  <span style="color:red">"crime"</span> is medium high, but at the same time when  <span style="color:red">"rad"</span> is high, <span style="color:red">"crime"</span> is medium low...and the probabilities for both of these results is super high. Perhaps this just tells us that logistic regression is not the right method for analyzing this data. Seeing this I am not as excited about this model as I was before. <span style="color:red">"rad"</span> is probably the only one of the explanatory variables that affects <span style="color:red">"crime"</span>, but logistic regression is not the way to analyse the data.
+
+
+
+# <span style="color:darkblue">Finally</span>
+
+This has been a very helpful course in both learning R and statistical methods with different types of datasets. Also, I want to thank the organizers for making this a course where learning truly is fun. This is not the case in in many courses though it should be. So thank you for being so enthusiastic about everything yourselves, that already shows good example for the students. I have already recommended this course for a couple of my friends. Keep up the good work! 
